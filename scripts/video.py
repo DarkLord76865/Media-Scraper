@@ -1,7 +1,6 @@
 import copy
 import io
 import os
-import shutil
 import subprocess
 import sys
 
@@ -13,12 +12,15 @@ def download_videos(website, save_folder, ffmpeg_path):
 	if not os.path.isdir(save_folder):
 		os.mkdir(save_folder)
 
+	sys.stdout = open(os.devnull, "w")
+	sys.stderr = open(os.devnull, "w")
+
 	with YoutubeDL() as ydl:
 		info_dict = ydl.extract_info(website, download=False)
 
 	if "entries" in info_dict.keys():
 		for entry_ind in range(len(info_dict["entries"])):
-			process_video(website, save_folder, copy.deepcopy(info_dict["entries"][entry_ind]), entry_ind + 1)
+			process_video(website, save_folder, copy.deepcopy(info_dict["entries"][entry_ind]), ffmpeg_path, entry_ind + 1)
 	else:
 		process_video(website, save_folder, copy.deepcopy(info_dict), ffmpeg_path)
 
@@ -172,6 +174,9 @@ def process_video(website, save_folder, info, ffmpeg_path, playlist_index=None) 
 	sys.stdout = new_stdout
 	ydl_opts = {
 		'format': best_video,
+		'paths': {
+			'home': save_folder,
+		},
 		'outtmpl': '%(id)s.%(ext)s',
 		'overwrites': True,
 	}
@@ -187,8 +192,9 @@ def process_video(website, save_folder, info, ffmpeg_path, playlist_index=None) 
 			video_file = line.split("Destination: ")[1].rstrip("\n")
 	if video_file is None:
 		return False
-	os.rename(video_file, f"media_scraper_video_{video_file}")
-	video_file = f"media_scraper_video_{video_file}"
+
+	os.rename(video_file, f"{os.path.splitext(video_file)[0]}_media_scraper_video_{os.path.splitext(video_file)[1]}")
+	video_file = f"{os.path.splitext(video_file)[0]}_media_scraper_video_{os.path.splitext(video_file)[1]}"
 
 	if best_video != best_audio:
 		# download audio
@@ -198,6 +204,9 @@ def process_video(website, save_folder, info, ffmpeg_path, playlist_index=None) 
 		sys.stdout = new_stdout
 		ydl_opts = {
 			'format': best_audio,
+			'paths': {
+				'home': save_folder,
+			},
 			'outtmpl': '%(id)s.%(ext)s',
 			'overwrites': True,
 		}
@@ -213,8 +222,8 @@ def process_video(website, save_folder, info, ffmpeg_path, playlist_index=None) 
 				audio_file = line.split("Destination: ")[1].rstrip("\n")
 		if audio_file is None:
 			return False
-		os.rename(audio_file, f"media_scraper_audio_{audio_file}")
-		audio_file = f"media_scraper_audio_{audio_file}"
+		os.rename(audio_file, f"{os.path.splitext(audio_file)[0]}_media_scraper_audio_{os.path.splitext(audio_file)[1]}")
+		audio_file = f"{os.path.splitext(audio_file)[0]}_media_scraper_audio_{os.path.splitext(audio_file)[1]}"
 	else:
 		audio_file = video_file
 
@@ -224,19 +233,19 @@ def process_video(website, save_folder, info, ffmpeg_path, playlist_index=None) 
 		# rename file to avoid ffmpeg overwriting
 
 		# remux with ffmpeg
-		subprocess.call([ffmpeg_path, '-y', '-i', video_file, '-c', 'copy', video_title + '.mp4'])
+		subprocess.call([ffmpeg_path, '-y', '-i', video_file, '-c', 'copy', os.path.join(save_folder, video_title + '.mp4')],
+		                stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 		os.remove(video_file)
 	else:
 		# rename files to avoid ffmpeg overwriting
 
 		# merge with ffmpeg
-		subprocess.call([ffmpeg_path, '-y', '-an', '-i', video_file, '-vn', '-i', audio_file, '-c', 'copy', video_title + '.mp4'])
+		subprocess.call([ffmpeg_path, '-y', '-an', '-i', video_file, '-vn', '-i', audio_file, '-c', 'copy', os.path.join(save_folder, video_title + '.mp4')],
+		                stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 		os.remove(video_file)
 		os.remove(audio_file)
-
-	shutil.move(video_title + '.mp4', os.path.join(save_folder, video_title + '.mp4'))
 
 	return True
 

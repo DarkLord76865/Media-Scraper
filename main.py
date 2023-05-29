@@ -1,11 +1,14 @@
+import os
+import sys
+import threading
 import tkinter
 import tkinter.filedialog
 import tkinter.messagebox
-import os
-import sys
-from scripts.video import download_videos
-from scripts.image import download_images
+
 import validators
+
+from scripts.image import download_images
+from scripts.video import download_videos
 
 
 def resource_path(relative_path):
@@ -89,6 +92,8 @@ class App:
 		self.videos_switch.bind("<Button-1>", lambda event: self.toggle_videos())
 		self.videos_switch.place(x=360, y=255, width=80, height=35)
 
+		self.download_thread = None
+
 		self.root.mainloop()
 
 	def download(self):
@@ -98,16 +103,21 @@ class App:
 		inputed_link = self.link_entry.get()
 		inputed_folder = self.folder_entry.get()
 
+		if not os.path.isabs(inputed_folder):
+			inputed_folder = os.path.join(os.path.dirname(sys.executable), inputed_folder)
+
 		if not validators.url(inputed_link):
 			tkinter.messagebox.showerror("Error!", "The specified link is invalid.")
 			return
 
-		if inputed_folder == "":
-			tkinter.messagebox.showerror("Error!", "No folder was specified.")
-			return
 		if not os.path.isdir(inputed_folder):
 			if tkinter.messagebox.askyesno("Error!", "The specified folder does not exist. Should it be created?"):
-				os.mkdir(inputed_folder)
+				try:
+					os.mkdir(inputed_folder)
+				except PermissionError:
+					print(inputed_folder)
+					tkinter.messagebox.showerror("Error!", "You do not have permission to create a folder in this location.")
+					return
 			else:
 				return
 
@@ -116,17 +126,30 @@ class App:
 		self.browse_button.config(background="#664C10", activebackground="#664C10", cursor="arrow", highlightcolor="#000000", highlightbackground="#000000")
 		self.link_entry.config(state=tkinter.DISABLED, highlightcolor="#000000", highlightbackground="#000000")
 		self.folder_entry.config(state=tkinter.DISABLED, highlightcolor="#000000", highlightbackground="#000000")
+		self.images_switch.config(cursor="arrow")
+		self.videos_switch.config(cursor="arrow")
 
+		self.download_thread = threading.Thread(target=self.download_thread_function, args=(inputed_link, inputed_folder))
+		self.download_thread.start()
+		self.download_thread_check()
+
+	def download_thread_function(self, inputed_link, inputed_folder):
 		if self.images_switch_state:
 			download_images(inputed_link, inputed_folder)
 		if self.videos_switch_state:
 			download_videos(inputed_link, inputed_folder, resource_path("lib/ffmpeg/bin/ffmpeg.exe"))
 
-		self.stop_hourglass()
-		self.download_button.config(background="#B2861C", activebackground="#664C10", cursor="hand2", highlightcolor="white", highlightbackground="white")
-		self.browse_button.config(background="#B2861C", activebackground="#664C10", cursor="hand2", highlightcolor="white", highlightbackground="white")
-		self.link_entry.config(state=tkinter.NORMAL, highlightcolor="white", highlightbackground="white")
-		self.folder_entry.config(state=tkinter.NORMAL, highlightcolor="white", highlightbackground="white")
+	def download_thread_check(self):
+		if self.download_thread.is_alive():
+			self.root.after(100, self.download_thread_check)
+		else:
+			self.stop_hourglass()
+			self.download_button.config(background="#B2861C", activebackground="#664C10", cursor="hand2", highlightcolor="white", highlightbackground="white")
+			self.browse_button.config(background="#B2861C", activebackground="#664C10", cursor="hand2", highlightcolor="white", highlightbackground="white")
+			self.link_entry.config(state=tkinter.NORMAL, highlightcolor="white", highlightbackground="white")
+			self.folder_entry.config(state=tkinter.NORMAL, highlightcolor="white", highlightbackground="white")
+			self.images_switch.config(cursor="hand2")
+			self.videos_switch.config(cursor="hand2")
 
 	def browse(self):
 		if self.hourglass_active:
