@@ -21,7 +21,7 @@ class App:
 	def __init__(self):
 
 		self.width = 700
-		self.height = 275
+		self.height = 300
 
 		self.root = tkinter.Tk()
 		self.root.title("Media Scraper")
@@ -75,6 +75,20 @@ class App:
 		self.hourglass = tkinter.Label(self.root, image=self.hourglass_frames[0] if self.hourglass_active else "", bg="#ffc028")
 		self.hourglass.place(x=600, y=20, width=75, height=75)
 
+		self.images_switch_state = True
+		self.images_switch = tkinter.Label(self.root, text="Images", font=("Helvetica", 11, "bold"),
+		                                   bg="#664C10", fg="#ffffff", activebackground="#664C10", activeforeground="#ffffff", cursor="hand2",
+		                                   borderwidth=0, highlightthickness=4, highlightcolor="green", highlightbackground="green")
+		self.images_switch.bind("<Button-1>", lambda event: self.toggle_images())
+		self.images_switch.place(x=260, y=255, width=80, height=35)
+
+		self.videos_switch_state = True
+		self.videos_switch = tkinter.Label(self.root, text="Videos", font=("Helvetica", 11, "bold"),
+		                                   bg="#664C10", fg="#ffffff", activebackground="#664C10", activeforeground="#ffffff", cursor="hand2",
+		                                   borderwidth=0, highlightthickness=4, highlightcolor="green", highlightbackground="green")
+		self.videos_switch.bind("<Button-1>", lambda event: self.toggle_videos())
+		self.videos_switch.place(x=360, y=255, width=80, height=35)
+
 		self.root.mainloop()
 
 	def download(self):
@@ -103,8 +117,10 @@ class App:
 		self.link_entry.config(state=tkinter.DISABLED, highlightcolor="#000000", highlightbackground="#000000")
 		self.folder_entry.config(state=tkinter.DISABLED, highlightcolor="#000000", highlightbackground="#000000")
 
-		download_images(inputed_link, inputed_folder)
-		download_videos(inputed_link, inputed_folder)
+		if self.images_switch_state:
+			download_images(inputed_link, inputed_folder)
+		if self.videos_switch_state:
+			download_videos(inputed_link, inputed_folder, resource_path("lib/ffmpeg/bin/ffmpeg.exe"))
 
 		self.stop_hourglass()
 		self.download_button.config(background="#B2861C", activebackground="#664C10", cursor="hand2", highlightcolor="white", highlightbackground="white")
@@ -136,6 +152,22 @@ class App:
 			self.hourglass_frame_index %= len(self.hourglass_frames)
 			self.hourglass.config(image=self.hourglass_frames[self.hourglass_frame_index])
 			self.root.after(50, self.spin_hourglass)
+
+	def toggle_images(self):
+		if self.hourglass_active:
+			return
+
+		self.images_switch_state = not self.images_switch_state
+		self.images_switch.config(highlightcolor="green" if self.images_switch_state else "red", highlightbackground="green" if self.images_switch_state else "red",
+		                          foreground="white" if self.images_switch_state else "black")
+
+	def toggle_videos(self):
+		if self.hourglass_active:
+			return
+
+		self.videos_switch_state = not self.videos_switch_state
+		self.videos_switch.config(highlightcolor="green" if self.videos_switch_state else "red", highlightbackground="green" if self.videos_switch_state else "red",
+		                          foreground="white" if self.videos_switch_state else "black")
 
 
 if __name__ == "__main__":
