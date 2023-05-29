@@ -155,7 +155,7 @@ class App:
 		if self.hourglass_active:
 			return
 
-		result_folder = tkinter.filedialog.askdirectory(mustexist=True, initialdir=os.path.dirname(sys.executable))
+		result_folder = tkinter.filedialog.askdirectory(mustexist=True, initialdir=self.folder_entry.get() if os.path.isdir(self.folder_entry.get()) else os.path.dirname(sys.executable))
 		if result_folder != "":
 			self.folder_entry.delete(0, tkinter.END)
 			self.folder_entry.insert(0, result_folder)

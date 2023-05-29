@@ -15,11 +15,16 @@ def download_videos(website, save_folder, ffmpeg_path):
 	sys.stdout = open(os.devnull, "w")
 	sys.stderr = open(os.devnull, "w")
 
-	with YoutubeDL() as ydl:
+	ydl_opts = {
+		"ignoreerrors": True,
+	}
+	with YoutubeDL(ydl_opts) as ydl:
 		info_dict = ydl.extract_info(website, download=False)
 
 	if "entries" in info_dict.keys():
 		for entry_ind in range(len(info_dict["entries"])):
+			if info_dict["entries"][entry_ind] is None:
+				continue
 			process_video(website, save_folder, copy.deepcopy(info_dict["entries"][entry_ind]), ffmpeg_path, entry_ind + 1)
 	else:
 		process_video(website, save_folder, copy.deepcopy(info_dict), ffmpeg_path)
@@ -85,6 +90,8 @@ def process_video(website, save_folder, info, ffmpeg_path, playlist_index=None) 
 					max_size = fmt["filesize_approx"]
 			except KeyError:
 				pass
+		except TypeError:
+			pass
 	if max_size == 0:
 		return False
 
@@ -103,6 +110,9 @@ def process_video(website, save_folder, info, ffmpeg_path, playlist_index=None) 
 			except KeyError:
 				available_formats.pop(fmt_ind - deleted)
 				deleted += 1
+		except TypeError:
+			available_formats.pop(fmt_ind - deleted)
+			deleted += 1
 
 	# store the id of the best video format
 	best_video = available_formats[0]["format_id"]
@@ -143,6 +153,8 @@ def process_video(website, save_folder, info, ffmpeg_path, playlist_index=None) 
 						max_size = fmt["filesize_approx"]
 				except KeyError:
 					pass
+			except TypeError:
+				pass
 		if max_size == 0:
 			return False
 
@@ -161,6 +173,9 @@ def process_video(website, save_folder, info, ffmpeg_path, playlist_index=None) 
 				except KeyError:
 					available_formats.pop(fmt_ind - deleted)
 					deleted += 1
+			except TypeError:
+				available_formats.pop(fmt_ind - deleted)
+				deleted += 1
 
 		# store the id of the best audio format
 		best_audio = available_formats[0]["format_id"]
@@ -179,6 +194,7 @@ def process_video(website, save_folder, info, ffmpeg_path, playlist_index=None) 
 		},
 		'outtmpl': '%(id)s.%(ext)s',
 		'overwrites': True,
+		'ignoreerrors': True,
 	}
 	if playlist_index is not None:
 		ydl_opts['playlist_items'] = str(playlist_index)
@@ -209,6 +225,7 @@ def process_video(website, save_folder, info, ffmpeg_path, playlist_index=None) 
 			},
 			'outtmpl': '%(id)s.%(ext)s',
 			'overwrites': True,
+			'ignoreerrors': True,
 		}
 		if playlist_index is not None:
 			ydl_opts['playlist_items'] = str(playlist_index)
@@ -233,16 +250,16 @@ def process_video(website, save_folder, info, ffmpeg_path, playlist_index=None) 
 		# rename file to avoid ffmpeg overwriting
 
 		# remux with ffmpeg
-		subprocess.call([ffmpeg_path, '-y', '-i', video_file, '-c', 'copy', os.path.join(save_folder, video_title + '.mp4')],
-		                stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+		subprocess.run([ffmpeg_path, '-y', '-i', video_file, '-c', 'copy', os.path.join(save_folder, video_title + '.mp4')],
+		               stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, creationflags=subprocess.CREATE_NO_WINDOW)
 
 		os.remove(video_file)
 	else:
 		# rename files to avoid ffmpeg overwriting
 
 		# merge with ffmpeg
-		subprocess.call([ffmpeg_path, '-y', '-an', '-i', video_file, '-vn', '-i', audio_file, '-c', 'copy', os.path.join(save_folder, video_title + '.mp4')],
-		                stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+		subprocess.run([ffmpeg_path, '-y', '-an', '-i', video_file, '-vn', '-i', audio_file, '-c', 'copy', os.path.join(save_folder, video_title + '.mp4')],
+		               stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, creationflags=subprocess.CREATE_NO_WINDOW)
 
 		os.remove(video_file)
 		os.remove(audio_file)
