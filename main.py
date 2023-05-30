@@ -5,6 +5,7 @@ import tkinter
 import tkinter.filedialog
 import tkinter.messagebox
 
+import psutil
 import validators
 
 from scripts.image import download_images
@@ -95,6 +96,8 @@ class App:
 		self.download_thread = None
 
 		self.root.mainloop()
+
+		psutil.Process(os.getpid()).kill()
 
 	def download(self):
 		if self.hourglass_active:
