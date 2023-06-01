@@ -9,24 +9,33 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+    - name: Install requirements
+      run: pip install -r requirements.txt
     - name: Package binary
-      run: 
+      run: python build.py
+    - name: Upload binary artifact
   
   build-macos:
     name: Build macOS binary
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v3
+    - name: Install requirements
+      run: pip install -r requirements.txt
     - name: Package binary
-      run: 
+      run: python build.py
+    - name: Upload binary artifact
   
   build-windows:
     name: Build Windows binary
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v3
+    - name: Install requirements
+      run: pip install -r requirements.txt
     - name: Package binary
-      run: 
+      run: python build.py
+    - name: Upload binary artifact
   
   publish-release:
     name: Publish GitHub release
