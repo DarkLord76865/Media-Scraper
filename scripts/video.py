@@ -12,8 +12,8 @@ def download_videos(website, save_folder, ffmpeg_path):
 	if not os.path.isdir(save_folder):
 		os.mkdir(save_folder)
 
-	#sys.stdout = open(os.devnull, "w")
-	#sys.stderr = open(os.devnull, "w")
+	sys.stdout = open(os.devnull, "w")
+	sys.stderr = open(os.devnull, "w")
 
 	ydl_opts = {
 		"ignoreerrors": True,
