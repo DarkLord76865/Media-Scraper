@@ -12,8 +12,8 @@ def download_videos(website, save_folder, ffmpeg_path):
 	if not os.path.isdir(save_folder):
 		os.mkdir(save_folder)
 
-	sys.stdout = open(os.devnull, "w")
-	sys.stderr = open(os.devnull, "w")
+	#sys.stdout = open(os.devnull, "w")
+	#sys.stderr = open(os.devnull, "w")
 
 	ydl_opts = {
 		"ignoreerrors": True,
@@ -103,20 +103,21 @@ def process_video(website, save_folder, info, ffmpeg_path, playlist_index=None) 
 	deleted = 0
 	for fmt_ind in range(len(available_formats)):
 		try:
-			if available_formats[fmt_ind - deleted]["filesize"] < max_size * 0.95:
+			if available_formats[fmt_ind - deleted]["filesize"] is None:
+				raise KeyError
+			elif available_formats[fmt_ind - deleted]["filesize"] < max_size * 0.95:
 				available_formats.pop(fmt_ind - deleted)
 				deleted += 1
 		except KeyError:
 			try:
-				if available_formats[fmt_ind - deleted]["filesize_approx"] < max_size * 0.95:
+				if available_formats[fmt_ind - deleted]["filesize_approx"] is None:
+					raise KeyError
+				elif available_formats[fmt_ind - deleted]["filesize_approx"] < max_size * 0.95:
 					available_formats.pop(fmt_ind - deleted)
 					deleted += 1
 			except KeyError:
 				available_formats.pop(fmt_ind - deleted)
 				deleted += 1
-		except TypeError:
-			available_formats.pop(fmt_ind - deleted)
-			deleted += 1
 
 	# store the id of the best video format
 	best_video = available_formats[0]["format_id"]
@@ -170,20 +171,21 @@ def process_video(website, save_folder, info, ffmpeg_path, playlist_index=None) 
 		deleted = 0
 		for fmt_ind in range(len(available_formats)):
 			try:
-				if available_formats[fmt_ind - deleted]["filesize"] < max_size * 0.95:
+				if available_formats[fmt_ind - deleted]["filesize"] is None:
+					raise KeyError
+				elif available_formats[fmt_ind - deleted]["filesize"] < max_size * 0.95:
 					available_formats.pop(fmt_ind - deleted)
 					deleted += 1
 			except KeyError:
 				try:
-					if available_formats[fmt_ind - deleted]["filesize_approx"] < max_size * 0.95:
+					if available_formats[fmt_ind - deleted]["filesize_approx"] is None:
+						raise KeyError
+					elif available_formats[fmt_ind - deleted]["filesize_approx"] < max_size * 0.95:
 						available_formats.pop(fmt_ind - deleted)
 						deleted += 1
 				except KeyError:
 					available_formats.pop(fmt_ind - deleted)
 					deleted += 1
-			except TypeError:
-				available_formats.pop(fmt_ind - deleted)
-				deleted += 1
 
 		# store the id of the best audio format
 		best_audio = available_formats[0]["format_id"]
