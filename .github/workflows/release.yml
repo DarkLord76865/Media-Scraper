@@ -7,13 +7,24 @@ jobs:
   build-linux:
     name: Build Linux binary
     runs-on: ubuntu-latest
+
     steps:
     - uses: actions/checkout@v3
+
     - name: Install requirements
       run: pip install -r requirements.txt
+
+    - name: Get version
+      id: get_version
+      run: echo "VERSION_NUM={python build.py --version}" >> $GITHUB_OUTPUT
+
     - name: Package binary
       run: python build.py
+
     - name: Upload binary artifact
+      run: |
+        ls -l
+        echo "${{ steps.get_version.outputs.VERSION_NUM }}"
   
   build-macos:
     name: Build macOS binary
@@ -25,6 +36,7 @@ jobs:
     - name: Package binary
       run: python build.py
     - name: Upload binary artifact
+      run: ls -l
   
   build-windows:
     name: Build Windows binary
@@ -36,12 +48,10 @@ jobs:
     - name: Package binary
       run: python build.py
     - name: Upload binary artifact
+      run: ls -l
   
   publish-release:
     name: Publish GitHub release
     runs-on: ubuntu-latest
     needs:
-      build-linux:
-      build-macos:
-      build-windows:
-  
+      [build-linux, build-macos, build-windows]

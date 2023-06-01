@@ -2,6 +2,7 @@ import os
 import platform
 import random
 import shutil
+import sys
 
 import PyInstaller.__main__
 
@@ -76,6 +77,8 @@ def main():
 	name = "Media-Scraper"
 	version = "1.0.2"
 
+	name = f"{name}-v{version}"
+
 	console = False
 	onefile = True
 	uac_admin = False
@@ -91,6 +94,8 @@ def main():
 			upx = ""
 
 	files = []
+	folders = []
+
 	match platform.system():
 		case "Windows":
 			files.append("lib/ffmpeg/windows/ffmpeg.exe")
@@ -99,10 +104,12 @@ def main():
 		case "Darwin":
 			files.append("lib/ffmpeg/macos/ffmpeg")
 
-	folders = ["data"]
+	folders.append("data")
 
-	name = f"{name}-v{version}"
-	build(name, console, onefile, uac_admin, icon, upx, files, folders)
+	if sys.argv[1] == "--version":
+		print(version)
+	else:
+		build(name, console, onefile, uac_admin, icon, upx, files, folders)
 
 
 if __name__ == '__main__':
