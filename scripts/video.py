@@ -82,11 +82,15 @@ def process_video(website, save_folder, info, ffmpeg_path, playlist_index=None) 
 	max_size = 0
 	for fmt in available_formats:
 		try:
-			if fmt["filesize"] > max_size:
+			if fmt["filesize"] is None:
+				raise KeyError
+			elif fmt["filesize"] > max_size:
 				max_size = fmt["filesize"]
 		except KeyError:
 			try:
-				if fmt["filesize_approx"] > max_size:
+				if fmt["filesize_approx"] is None:
+					raise KeyError
+				elif fmt["filesize_approx"] > max_size:
 					max_size = fmt["filesize_approx"]
 			except KeyError:
 				pass

@@ -70,7 +70,7 @@ def build(name, console, onefile, uac_admin, icon, upx, files, folders):
 	shutil.rmtree(path=work_path, ignore_errors=True)
 
 def main():
-	name = "Media-Scraper-v1.0.1"
+	name = "Media-Scraper-v1.0.2"
 	console = False
 	onefile = True
 	uac_admin = False
