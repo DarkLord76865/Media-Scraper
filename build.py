@@ -106,7 +106,7 @@ def main():
 
 	folders.append("data")
 
-	if sys.argv[1] == "--version":
+	if len(sys.argv) > 1 and sys.argv[1] == "--version":
 		print(version)
 	else:
 		build(name, console, onefile, uac_admin, icon, upx, files, folders)
