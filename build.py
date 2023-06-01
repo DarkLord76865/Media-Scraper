@@ -1,5 +1,5 @@
-import datetime
 import os
+import platform
 import random
 import shutil
 
@@ -14,10 +14,13 @@ def build(name, console, onefile, uac_admin, icon, upx, files, folders):
 
 	result_path = os.path.abspath(".")
 
+	if os.path.isfile(os.path.join(os.path.abspath("."), f"{name}.exe")):
+		os.remove(os.path.join(os.path.abspath("."), f"{name}.exe"))
+
 	run_list = ['main.py',
 	            '--noconfirm',
 	            '--clean',
-	            '--name', f"{name}_{datetime.datetime.now().strftime('%Y-%m-%d_%H.%M.%S')}",
+	            '--name', f"{name}",
 	            '--workpath', work_path,
 	            '--specpath', work_path,
 	            '--distpath', result_path]
@@ -70,15 +73,35 @@ def build(name, console, onefile, uac_admin, icon, upx, files, folders):
 	shutil.rmtree(path=work_path, ignore_errors=True)
 
 def main():
-	name = "Media-Scraper-v1.0.2"
+	name = "Media-Scraper"
+	version = "1.0.2"
+
 	console = False
 	onefile = True
 	uac_admin = False
+
 	icon = "data/download_icon.ico"
-	upx = "lib/upx/upx.exe"
-	files = ["lib/ffmpeg/bin/ffmpeg.exe"]
+
+	match platform.system():
+		case "Windows":
+			upx = "lib/upx/windows/upx.exe"
+		case "Linux":
+			upx = "lib/upx/linux/upx"
+		case _:
+			upx = ""
+
+	files = []
+	match platform.system():
+		case "Windows":
+			files.append("lib/ffmpeg/windows/ffmpeg.exe")
+		case "Linux":
+			files.append("lib/ffmpeg/linux/ffmpeg")
+		case "Darwin":
+			files.append("lib/ffmpeg/macos/ffmpeg")
+
 	folders = ["data"]
 
+	name = f"{name}-v{version}"
 	build(name, console, onefile, uac_admin, icon, upx, files, folders)
 
 

@@ -1,4 +1,5 @@
 import os
+import platform
 import sys
 import threading
 import tkinter
@@ -140,7 +141,16 @@ class App:
 		if self.images_switch_state:
 			download_images(inputed_link, inputed_folder)
 		if self.videos_switch_state:
-			download_videos(inputed_link, inputed_folder, resource_path("lib/ffmpeg/bin/ffmpeg.exe"))
+			match platform.system():
+				case "Windows":
+					ffmpeg_path = resource_path("lib/ffmpeg/windows/ffmpeg.exe")
+				case "Linux":
+					ffmpeg_path = resource_path("lib/ffmpeg/linux/ffmpeg")
+				case "Darwin":
+					ffmpeg_path = resource_path("lib/ffmpeg/macos/ffmpeg")
+				case _:
+					ffmpeg_path = ""
+			download_videos(inputed_link, inputed_folder, ffmpeg_path)
 
 	def download_thread_check(self):
 		if self.download_thread.is_alive():
@@ -197,4 +207,8 @@ class App:
 
 
 if __name__ == "__main__":
+	if platform.system() not in ["Windows", "Darwin", "Linux"]:
+		tkinter.messagebox.showerror("Error!", "Your operating system is not supported.")
+		sys.exit()
+
 	App()
