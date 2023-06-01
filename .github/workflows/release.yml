@@ -1,0 +1,38 @@
+name: Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-linux:
+    name: Build Linux binary
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Package binary
+      run: 
+  
+  build-macos:
+    name: Build macOS binary
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Package binary
+      run: 
+  
+  build-windows:
+    name: Build Windows binary
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Package binary
+      run: 
+  
+  publish-release:
+    name: Publish GitHub release
+    runs-on: ubuntu-latest
+    needs:
+      build-linux:
+      build-macos:
+      build-windows:
+  
