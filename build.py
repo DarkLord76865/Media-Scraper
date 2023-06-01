@@ -53,9 +53,19 @@ def build(name, console, onefile, uac_admin, icon, upx, files, folders):
 			upx_path = os.path.join(os.path.abspath("."), os.path.dirname(upx))
 			run_list.extend(('--upx-dir', upx_path))
 
+	match platform.system():
+		case "Windows":
+			file_separator = ";"
+		case "Linux":
+			file_separator = ":"
+		case "Darwin":
+			file_separator = ":"
+		case _:
+			file_separator = ";"
+
 	for file in files:
 		if os.path.isfile(os.path.join(os.path.abspath("."), file)):
-			run_list.extend(('--add-data', f'{os.path.join(os.path.abspath("."), file)};{os.path.dirname(file)}'))
+			run_list.extend(('--add-data', f'{os.path.join(os.path.abspath("."), file)}{file_separator}{os.path.dirname(file)}'))
 		else:
 			raise Exception("Invalid file!")
 
@@ -64,7 +74,7 @@ def build(name, console, onefile, uac_admin, icon, upx, files, folders):
 			for walk in os.walk(folder, followlinks=False):
 				for file in walk[2]:
 					if os.path.isfile(os.path.join(walk[0], file)):
-						run_list.extend(('--add-data', f'{os.path.join(os.path.abspath("."), os.path.join(walk[0], file))};{os.path.dirname(os.path.join(walk[0], file))}'))
+						run_list.extend(('--add-data', f'{os.path.join(os.path.abspath("."), os.path.join(walk[0], file))}{file_separator}{os.path.dirname(os.path.join(walk[0], file))}'))
 					else:
 						raise Exception("Invalid folder!")
 		else:
