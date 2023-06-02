@@ -103,7 +103,7 @@ def main():
 
 			files.append("lib/ffmpeg/windows/ffmpeg.exe")
 		case "Linux":
-			icon = "data/download_icon.ico"
+			icon = ""
 			upx = "lib/upx/linux/upx"
 
 			files.append("lib/ffmpeg/linux/ffmpeg")

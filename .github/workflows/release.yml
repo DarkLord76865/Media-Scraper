@@ -27,8 +27,11 @@ jobs:
     - name: Package binary
       run: python build.py
 
-    - name: test
-      run: echo "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-linux-x86_64"
+    - name: Rename binary
+      run: mv "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}" "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-linux-x86_64"
+
+    - name: list files
+      run: ls -l
 
     - uses: actions/upload-artifact@v3
       name: Upload binary artifact
