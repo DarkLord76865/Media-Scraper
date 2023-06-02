@@ -32,7 +32,7 @@ class App:
 		self.root.title("Media Scraper")
 		self.root.geometry(f"{self.width}x{self.height}+{(self.root.winfo_screenwidth() - self.width) // 2}+{(self.root.winfo_screenheight() - self.height) // 2}")
 		self.root.resizable(False, False)
-		self.root.iconbitmap(resource_path("data/download_icon.ico"))
+		self.root.iconbitmap(resource_path("data/download_icon.ico") if platform.system() != "Darwin" else resource_path("data/download_icon_mac.icns"))
 		self.root.config(bg="#ffc028")
 
 		self.title = tkinter.Label(self.root, text="Media Scraper", font=("Gabriola", 50, "bold"), bg="#ffc028", fg="#ffffff")

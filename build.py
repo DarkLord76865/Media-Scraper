@@ -93,26 +93,28 @@ def main():
 	onefile = True
 	uac_admin = False
 
-	icon = "data/download_icon.ico"
-
-	match platform.system():
-		case "Windows":
-			upx = "lib/upx/windows/upx.exe"
-		case "Linux":
-			upx = "lib/upx/linux/upx"
-		case _:
-			upx = ""
-
 	files = []
 	folders = []
 
 	match platform.system():
 		case "Windows":
+			icon = "data/download_icon.ico"
+			upx = "lib/upx/windows/upx.exe"
+
 			files.append("lib/ffmpeg/windows/ffmpeg.exe")
 		case "Linux":
+			icon = "data/download_icon.ico"
+			upx = "lib/upx/linux/upx"
+
 			files.append("lib/ffmpeg/linux/ffmpeg")
 		case "Darwin":
+			icon = "data/download_icon_mac.icns"
+			upx = ""
+
 			files.append("lib/ffmpeg/macos/ffmpeg")
+		case _:
+			print("Unknown platform!", file=sys.stderr)
+			sys.exit(1)
 
 	folders.append("data")
 
