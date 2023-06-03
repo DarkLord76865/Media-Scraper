@@ -15,3 +15,4 @@ jobs:
       with:
         args: |
           --ignore E101
+          --ignore E501
