@@ -3,6 +3,11 @@ name: Release
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read/write
+  metadata: read
+  packages: read
+
 jobs:
   build-linux:
     name: Build Linux binary
@@ -39,7 +44,7 @@ jobs:
       name: Upload binary artifact
       with:
         name: linux-binary
-        retention-days: 1
+        retention-days: 3
         path: "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-linux-x86_64.zip"
   
   build-macos:
@@ -77,7 +82,7 @@ jobs:
       name: Upload binary artifact
       with:
         name: macos-binary
-        retention-days: 1
+        retention-days: 3
         path: "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-macos-x86_64.zip"
   
   build-windows:
@@ -117,7 +122,7 @@ jobs:
       name: Upload binary artifact
       with:
           name: windows-binary
-          retention-days: 1
+          retention-days: 3
           path: "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-windows-x86_64.zip"
   
   publish-release:
@@ -167,6 +172,20 @@ jobs:
       with:
           name: windows-binary
           path: windows-binary
+
+    - name: Extract Linux binary
+      run: |
+        cd linux-binary
+        tar -x -v -f "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-linux-x86_64.zip"
+        cd ..
+
+    # Don't extract macOS binary, because .app can't be distributed alone as it is a directory (will be distributed as .zip)
+
+    - name: Extract Windows binary
+      run: |
+        cd windows-binary
+        tar -x -v -f "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-windows-x86_64.zip"
+        cd ..
 
     - name: list directory
       run: ls -R
