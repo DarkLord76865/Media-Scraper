@@ -37,15 +37,12 @@ jobs:
     - name: Rename binary
       run: mv "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}" "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-linux-x86_64"
 
-    - name: Compress binary
-      run: tar -a -c -v -f "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-linux-x86_64.zip" "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-linux-x86_64"
-
     - uses: actions/upload-artifact@v3
       name: Upload binary artifact
       with:
         name: linux-binary
         retention-days: 3
-        path: "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-linux-x86_64.zip"
+        path: "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-linux-x86_64"
   
   build-macos:
     name: Build macOS binary
@@ -76,14 +73,14 @@ jobs:
       run: mv "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}.app" "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-macos-x86_64.app"
 
     - name: Compress binary
-      run: tar -a -c -v -f "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-macos-x86_64.zip" "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-macos-x86_64.app"
+      run: tar -a -c -v -f "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-macos-x86_64.tar.gz" "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-macos-x86_64.app"
 
     - uses: actions/upload-artifact@v3
       name: Upload binary artifact
       with:
         name: macos-binary
         retention-days: 3
-        path: "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-macos-x86_64.zip"
+        path: "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-macos-x86_64.tar.gz"
   
   build-windows:
     name: Build Windows binary
@@ -115,15 +112,12 @@ jobs:
       shell: bash
       run: mv "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}.exe" "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-windows-x86_64.exe"
 
-    - name: Compress binary
-      run: tar -a -c -v -f "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-windows-x86_64.zip" "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-windows-x86_64.exe"
-
     - uses: actions/upload-artifact@v3
       name: Upload binary artifact
       with:
           name: windows-binary
           retention-days: 3
-          path: "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-windows-x86_64.zip"
+          path: "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-windows-x86_64.exe"
   
   publish-release:
     name: Publish GitHub release
@@ -173,20 +167,6 @@ jobs:
           name: windows-binary
           path: windows-binary
 
-    - name: Extract Linux binary
-      run: |
-        cd linux-binary
-        tar -x -v -f "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-linux-x86_64.zip"
-        cd ..
-
-    # Don't extract macOS binary, because .app can't be distributed alone as it is a directory (will be distributed as .zip)
-
-    - name: Extract Windows binary
-      run: |
-        cd windows-binary
-        tar -x -v -f "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-windows-x86_64.zip"
-        cd ..
-
     - name: Create release
       uses: softprops/action-gh-release@v1
       with:
@@ -196,7 +176,7 @@ jobs:
         prerelease: false
         files: |
           linux-binary/${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-linux-x86_64
-          macos-binary/${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-macos-x86_64.zip
+          macos-binary/${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-macos-x86_64.tar.gz
           windows-binary/${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-windows-x86_64.exe
         name: v${{ steps.get_version.outputs.VERSION_NUM }}
         tag_name: v${{ steps.get_version.outputs.VERSION_NUM }}
