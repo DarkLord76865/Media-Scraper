@@ -7,7 +7,6 @@ jobs:
   build-linux:
     name: Build Linux binary
     runs-on: ubuntu-latest
-    shell: bash
 
     steps:
     - uses: actions/checkout@v3
@@ -25,7 +24,7 @@ jobs:
       id: get_version
       run: |
         VERSION_NUM=$(python build.py --version)
-        echo "VERSION_NUM=${ VERSION_NUM }" >> $GITHUB_OUTPUT
+        echo "VERSION_NUM=${VERSION_NUM}" >> $GITHUB_OUTPUT
 
     - name: Package binary
       run: python build.py
@@ -43,7 +42,6 @@ jobs:
   build-macos:
     name: Build macOS binary
     runs-on: macos-latest
-    shell: bash
 
     steps:
     - uses: actions/checkout@v3
@@ -61,7 +59,7 @@ jobs:
       id: get_version
       run: |
         VERSION_NUM=$(python build.py --version)
-        echo "VERSION_NUM=${ VERSION_NUM }" >> $GITHUB_OUTPUT
+        echo "VERSION_NUM=${VERSION_NUM}" >> $GITHUB_OUTPUT
 
     - name: Package binary
       run: python build.py
@@ -79,7 +77,6 @@ jobs:
   build-windows:
     name: Build Windows binary
     runs-on: windows-latest
-    shell: cmd
 
     steps:
     - uses: actions/checkout@v3
