@@ -104,7 +104,7 @@ def main():
 			files.append("lib/ffmpeg/windows/ffmpeg.exe")
 		case "Linux":
 			icon = ""
-			upx = "lib/upx/linux/upx"
+			upx = ""
 
 			files.append("lib/ffmpeg/linux/ffmpeg")
 		case "Darwin":
