@@ -140,6 +140,35 @@ jobs:
 
     - name: Get version
       id: get_version
-      run: echo "VERSION_NUM=$(python build.py --version)" >> $GITHUB_OUTPUT
+      run: |
+        VERSION_NUM=$(python build.py --version)
+        echo "VERSION_NUM=${VERSION_NUM}" >> $GITHUB_OUTPUT
+
+    - name: Create binary folders
+      run: |
+        mkdir -p linux-binary
+        mkdir -p macos-binary
+        mkdir -p windows-binary
+
+    - name: Download Linux binary
+      uses: actions/download-artifact@v3
+      with:
+        name: linux-binary
+        path: linux-binary
+
+    - name: Download macOS binary
+      uses: actions/download-artifact@v3
+      with:
+          name: macos-binary
+          path: macos-binary
+
+    - name: Download Windows binary
+      uses: actions/download-artifact@v3
+      with:
+          name: windows-binary
+          path: windows-binary
+
+    - name: list directory
+      run: ls -R
 
     - run: echo "test123"
