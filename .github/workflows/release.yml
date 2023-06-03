@@ -1,7 +1,6 @@
 name: Release
 
-on:
-  workflow_dispatch:
+on: workflow_dispatch
 
 permissions:
   contents: write
@@ -166,6 +165,18 @@ jobs:
       with:
           name: windows-binary
           path: windows-binary
+
+    - uses: mukunku/tag-exists-action@v1.2.0
+      name: Check if this version was already released
+      id: checkTag
+      with:
+        tag: 'v${{ steps.get_version.outputs.VERSION_NUM }}'
+
+    - name: Terminate if this version was already released
+      if: steps.checkTag.outputs.exists == 'true'
+      run: |
+        echo "v${{ steps.get_version.outputs.VERSION_NUM }} was already released!" >&2
+        exit 1
 
     - name: Create release
       uses: softprops/action-gh-release@v1
