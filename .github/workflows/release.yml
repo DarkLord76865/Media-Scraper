@@ -183,6 +183,7 @@ jobs:
       with:
         body: |
           ### **_${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}_**
+          !!! **Linux and macOS binaries not tested** !!!
         draft: false
         prerelease: false
         files: |
