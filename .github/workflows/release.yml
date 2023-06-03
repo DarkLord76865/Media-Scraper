@@ -24,8 +24,7 @@ jobs:
       id: get_version
       run: |
         VERSION_NUM=$(python build.py --version)
-        echo $VERSION_NUM >> $GITHUB_OUTPUT
-        echo "v${{ steps.get_version.outputs.VERSION_NUM }}"
+        echo "VERSION_NUM=${ VERSION_NUM }" >> $GITHUB_OUTPUT
 
     - name: Package binary
       run: python build.py
@@ -58,7 +57,9 @@ jobs:
 
     - name: Get version
       id: get_version
-      run: echo "VERSION_NUM=$(python build.py --version)" >> $GITHUB_OUTPUT
+      run: |
+        VERSION_NUM=$(python build.py --version)
+        echo "VERSION_NUM=${ VERSION_NUM }" >> $GITHUB_OUTPUT
 
     - name: Package binary
       run: python build.py
@@ -91,9 +92,9 @@ jobs:
 
     - name: Get version
       id: get_version
-      run: echo "VERSION_NUM=$(python build.py --version)" >> $GITHUB_OUTPUT
-
-    - run: echo "tekst ispred-${{ steps.get_version.outputs.VERSION_NUM }}-tekst iza"
+      run: |
+        set VERSION_NUM=$(python build.py --version)
+        echo VERSION_NUM=%VERSION_NUM% >> $GITHUB_OUTPUT
 
     - name: Package binary
       run: python build.py
