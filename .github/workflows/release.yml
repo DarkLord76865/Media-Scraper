@@ -91,6 +91,7 @@ jobs:
       run: pip install -r requirements.txt
 
     - name: Get version
+      shell: cmd
       id: get_version
       run: |
         for /f %i in ('python.exe build.py --version') do (set VERSION_NUM=%i)
