@@ -95,7 +95,6 @@ jobs:
       id: get_version
       run: |
         for /f %i in ('python.exe build.py --version') do (set VERSION_NUM=%i)
-        echo %VERSION_NUM% >> $GITHUB_OUTPUT
 
     - name: Package binary
       run: python build.py
