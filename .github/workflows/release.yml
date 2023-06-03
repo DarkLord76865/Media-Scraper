@@ -32,12 +32,15 @@ jobs:
     - name: Rename binary
       run: mv "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}" "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-linux-x86_64"
 
+    - name: Compress binary
+      run: tar -a -c -v -f "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-linux-x86_64.zip" "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-linux-x86_64"
+
     - uses: actions/upload-artifact@v3
       name: Upload binary artifact
       with:
         name: linux-binary
         retention-days: 1
-        path: "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-linux-x86_64"
+        path: "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-linux-x86_64.zip"
   
   build-macos:
     name: Build macOS binary
@@ -70,15 +73,12 @@ jobs:
     - name: Compress binary
       run: tar -a -c -v -f "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-macos-x86_64.zip" "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-macos-x86_64.app"
 
-    - name: list files
-      run: ls -la
-
     - uses: actions/upload-artifact@v3
       name: Upload binary artifact
       with:
         name: macos-binary
         retention-days: 1
-        path: "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-macos-x86_64.app"
+        path: "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-macos-x86_64.zip"
   
   build-windows:
     name: Build Windows binary
@@ -107,14 +107,18 @@ jobs:
       run: python build.py
 
     - name: Rename binary
-      run: ren "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}.exe" "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-windows-x86_64.exe"
+      shell: bash
+      run: mv "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}.exe" "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-windows-x86_64.exe"
+
+    - name: Compress binary
+      run: tar -a -c -v -f "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-windows-x86_64.zip" "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-windows-x86_64.exe"
 
     - uses: actions/upload-artifact@v3
       name: Upload binary artifact
       with:
           name: windows-binary
           retention-days: 1
-          path: "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-windows-x86_64.exe"
+          path: "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-windows-x86_64.zip"
   
   publish-release:
     name: Publish GitHub release
