@@ -61,32 +61,47 @@ jobs:
       run: python build.py
 
     - name: Rename binary
-      run: mv "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}" "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-macos-x86_64"
-
-    - name: List files
-      run: ls -l
+      run: mv "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}.app" "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-macos-x86_64.app"
 
     - uses: actions/upload-artifact@v3
       name: Upload binary artifact
       with:
         name: macos-binary
         retention-days: 1
-        path: "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-macos-x86_64"
+        path: "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-macos-x86_64.app"
   
   build-windows:
     name: Build Windows binary
     runs-on: windows-latest
+
     steps:
     - uses: actions/checkout@v3
+      name: Checkout repository
+
     - uses: actions/setup-python@v4
+      name: Setup Python
       with:
         python-version: '3.11'
+
     - name: Install requirements
       run: pip install -r requirements.txt
+
+    - name: Get version
+      id: get_version
+      run: echo "VERSION_NUM=$(python build.py --version)" >> $GITHUB_OUTPUT
+
     - name: Package binary
       run: python build.py
-    - name: list files
-      run: dir
+
+    - name: Rename binary
+      run: ren "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}.exe" "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-windows-x86_64.exe"
+
+    - uses: actions/upload-artifact@v3
+      name: Upload binary artifact
+      with:
+          name: windows-binary
+          retention-days: 1
+          path: "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-windows-x86_64.exe"
   
   publish-release:
     name: Publish GitHub release
