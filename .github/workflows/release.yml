@@ -24,7 +24,7 @@ jobs:
       id: get_version
       run: |
         VERSION_NUM=$(python build.py --version)
-        echo "VERSION_NUM=${ VERSION_NUM }" >> $GITHUB_OUTPUT
+        echo "VERSION_NUM=${{ VERSION_NUM }}" >> $GITHUB_OUTPUT
 
     - name: Package binary
       run: python build.py
@@ -59,7 +59,7 @@ jobs:
       id: get_version
       run: |
         VERSION_NUM=$(python build.py --version)
-        echo "VERSION_NUM=${ VERSION_NUM }" >> $GITHUB_OUTPUT
+        echo "VERSION_NUM=${{ VERSION_NUM }}" >> $GITHUB_OUTPUT
 
     - name: Package binary
       run: python build.py
