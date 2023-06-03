@@ -187,7 +187,18 @@ jobs:
         tar -x -v -f "${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-windows-x86_64.zip"
         cd ..
 
-    - name: list directory
-      run: ls -R
-
-    - run: echo "test123"
+    - name: Create release
+      uses: softprops/action-gh-release@v1
+      with:
+        body: |
+          ### **_${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}_**
+        draft: false
+        prerelease: false
+        files: |
+          linux-binary/${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-linux-x86_64
+          macos-binary/${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-macos-x86_64.zip
+          windows-binary/${{ github.event.repository.name }}-v${{ steps.get_version.outputs.VERSION_NUM }}-windows-x86_64.exe
+        name: v${{ steps.get_version.outputs.VERSION_NUM }}
+        tag_name: v${{ steps.get_version.outputs.VERSION_NUM }}
+        fail_on_unmatched_files: true
+        token: ${{ secrets.GITHUB_TOKEN }}
