@@ -57,9 +57,9 @@ jobs:
         fi
 
         if [[ $word1_found == true && $word2_found == true ]]; then
-          echo "::set-output name=words_found::true"
+          echo "words_found=true" >> $GITHUB_OUTPUT
         else
-          echo "::set-output name=words_found::false"
+          echo "words_found=false" >> $GITHUB_OUTPUT
         fi
 
     - name: Call release workflow
