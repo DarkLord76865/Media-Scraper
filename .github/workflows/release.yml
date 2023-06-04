@@ -1,11 +1,6 @@
 name: Release
 
-on:
-  workflow_dispatch:
-    inputs:
-      payload:
-        description: 'Payload'
-        required: false
+on: workflow_dispatch
 
 permissions:
   contents: write
