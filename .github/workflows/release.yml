@@ -6,7 +6,7 @@ on:
       sha:
         description: 'SHA of the commit to release'
         required: false
-        default: ${{ github.sha }}
+        default: $GITHUB_SHA
 
 permissions:
   contents: write
