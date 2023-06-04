@@ -68,12 +68,17 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
-          const repo = github.context.repo;
-          const owner = github.context.owner;
-          const workflow = 'release.yml';
-    
-          github.actions.createWorkflowDispatch({
-              owner: owner,
-              repo: repo,
-              workflow_id: workflow,
+          const octokit = require('@octokit/rest')();
+          const owner = context.repo.owner;
+          const repo = context.repo.repo;
+          const ref = context.sha;
+          octokit.authenticate({
+            type: 'token',
+            token: process.env.GITHUB_TOKEN
+          });
+          octokit.actions.createWorkflowDispatch({
+            owner: owner,
+            repo: repo,
+            workflow_id: 'release.yml',
+            ref: ref
           });
