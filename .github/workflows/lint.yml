@@ -68,8 +68,8 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
-          const repo = github.context.repo.repo;
-          const owner = github.context.repo.owner;
+          const repo = github.context.repo;
+          const owner = github.context.owner;
           const workflow = 'release.yml';
     
           github.actions.createWorkflowDispatch({
