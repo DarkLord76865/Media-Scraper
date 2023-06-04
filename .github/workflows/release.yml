@@ -6,7 +6,7 @@ on:
       sha:
         description: 'SHA of the commit to release'
         required: false
-        default: $GITHUB_SHA
+        default: "test123"
 
 permissions:
   contents: write
@@ -19,6 +19,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - run: echo "${{ env.sha }}"
+    - run: echo "${{ GITHUB_SHA }}"
+    
     - uses: actions/checkout@v3
       name: Checkout repository
       with:
