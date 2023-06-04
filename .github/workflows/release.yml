@@ -25,10 +25,12 @@ jobs:
         supplied_sha=${{ github.event.inputs.sha }}
         
         if [ -z "$supplied_sha" ]; then
-          echo "No SHA supplied, using caller commit SHA"
+          echo "No SHA supplied, using caller commit SHA:"
+          echo "$GITHUB_SHA"
           echo "SHA=$GITHUB_SHA" >> $GITHUB_OUTPUT
         else
-          echo "SHA supplied, using $supplied_sha"
+          echo "SHA supplied, using:"
+          echo "$supplied_sha"
           echo "SHA=$supplied_sha" >> $GITHUB_OUTPUT
         fi
 
@@ -69,10 +71,25 @@ jobs:
     runs-on: macos-latest
 
     steps:
+    - name: Get current SHA
+      id: current_sha
+      run: |
+        supplied_sha=${{ github.event.inputs.sha }}
+        
+        if [ -z "$supplied_sha" ]; then
+          echo "No SHA supplied, using caller commit SHA:"
+          echo "$GITHUB_SHA"
+          echo "SHA=$GITHUB_SHA" >> $GITHUB_OUTPUT
+        else
+          echo "SHA supplied, using:"
+          echo "$supplied_sha"
+          echo "SHA=$supplied_sha" >> $GITHUB_OUTPUT
+        fi
+
     - uses: actions/checkout@v3
       name: Checkout repository
       with:
-        ref: ${{ github.event.inputs.sha }}
+        ref: ${{ steps.current_sha.outputs.SHA }}
 
     - uses: actions/setup-python@v4
       name: Setup Python
@@ -109,10 +126,25 @@ jobs:
     runs-on: windows-latest
 
     steps:
+    - name: Get current SHA
+      id: current_sha
+      run: |
+        supplied_sha=${{ github.event.inputs.sha }}
+        
+        if [ -z "$supplied_sha" ]; then
+          echo "No SHA supplied, using caller commit SHA:"
+          echo "$GITHUB_SHA"
+          echo "SHA=$GITHUB_SHA" >> $GITHUB_OUTPUT
+        else
+          echo "SHA supplied, using:"
+          echo "$supplied_sha"
+          echo "SHA=$supplied_sha" >> $GITHUB_OUTPUT
+        fi
+
     - uses: actions/checkout@v3
       name: Checkout repository
       with:
-        ref: ${{ github.event.inputs.sha }}
+        ref: ${{ steps.current_sha.outputs.SHA }}
 
     - uses: actions/setup-python@v4
       name: Setup Python
@@ -150,10 +182,25 @@ jobs:
       [build-linux, build-macos, build-windows]
 
     steps:
+    - name: Get current SHA
+      id: current_sha
+      run: |
+        supplied_sha=${{ github.event.inputs.sha }}
+        
+        if [ -z "$supplied_sha" ]; then
+          echo "No SHA supplied, using caller commit SHA:"
+          echo "$GITHUB_SHA"
+          echo "SHA=$GITHUB_SHA" >> $GITHUB_OUTPUT
+        else
+          echo "SHA supplied, using:"
+          echo "$supplied_sha"
+          echo "SHA=$supplied_sha" >> $GITHUB_OUTPUT
+        fi
+
     - uses: actions/checkout@v3
       name: Checkout repository
       with:
-        ref: ${{ github.event.inputs.sha }}
+        ref: ${{ steps.current_sha.outputs.SHA }}
 
     - uses: actions/setup-python@v4
       name: Setup Python
