@@ -76,10 +76,14 @@ jobs:
           const repo = context.repo.repo;
           const workflow_id = 'release.yml';
           const ref = context.ref;
+          const sha = context.sha;
           
           github.rest.actions.createWorkflowDispatch({
             owner: owner,
             repo: repo,
             workflow_id: 'release.yml',
-            ref: ref
+            ref: ref,
+            inputs: {
+              sha: sha
+            },
           });

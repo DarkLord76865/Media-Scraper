@@ -1,6 +1,12 @@
 name: Release
 
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: 'SHA of the commit to release'
+        required: false
+        default: ${{ github.sha }}
 
 permissions:
   contents: write
@@ -15,6 +21,8 @@ jobs:
     steps:
     - uses: actions/checkout@v3
       name: Checkout repository
+      with:
+        ref: ${{ github.event.inputs.sha }}
 
     - uses: actions/setup-python@v4
       name: Setup Python
@@ -50,6 +58,8 @@ jobs:
     steps:
     - uses: actions/checkout@v3
       name: Checkout repository
+      with:
+        ref: ${{ github.event.inputs.sha }}
 
     - uses: actions/setup-python@v4
       name: Setup Python
@@ -88,6 +98,8 @@ jobs:
     steps:
     - uses: actions/checkout@v3
       name: Checkout repository
+      with:
+        ref: ${{ github.event.inputs.sha }}
 
     - uses: actions/setup-python@v4
       name: Setup Python
@@ -127,6 +139,8 @@ jobs:
     steps:
     - uses: actions/checkout@v3
       name: Checkout repository
+      with:
+        ref: ${{ github.event.inputs.sha }}
 
     - uses: actions/setup-python@v4
       name: Setup Python
