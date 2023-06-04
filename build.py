@@ -85,7 +85,7 @@ def build(name, console, onefile, uac_admin, icon, upx, files, folders):
 
 def main():
 	name = "Media-Scraper"
-	version = "1.0.9"
+	version = "1.0.10"
 
 	name = f"{name}-v{version}"
 
