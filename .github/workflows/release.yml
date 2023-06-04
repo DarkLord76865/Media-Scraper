@@ -6,7 +6,7 @@ on:
       sha:
         description: 'SHA of the commit to release'
         required: false
-        default: "test123"
+        default: ""
 
 permissions:
   contents: write
@@ -19,13 +19,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - run: echo "${{ env.sha }}"
-    - run: echo "${{ GITHUB_SHA }}"
-    
+    - name: Get current SHA
+      id: current_sha
+      run: |
+        supplied_sha=${{ github.event.inputs.sha }}
+        
+        if [ -z "$supplied_sha" ]; then
+          echo "No SHA supplied, using caller commit SHA"
+          echo "SHA=$GITHUB_SHA" >> $GITHUB_OUTPUT
+        else
+          echo "SHA supplied, using $supplied_sha"
+          echo "SHA=$supplied_sha" >> $GITHUB_OUTPUT
+        fi
+
     - uses: actions/checkout@v3
       name: Checkout repository
       with:
-        ref: ${{ github.event.inputs.sha }}
+        ref: ${{ steps.current_sha.outputs.SHA }}
 
     - uses: actions/setup-python@v4
       name: Setup Python
