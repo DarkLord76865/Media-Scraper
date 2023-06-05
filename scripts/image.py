@@ -1,8 +1,10 @@
 import os
 from urllib.parse import urljoin
 
-import requests
 from bs4 import BeautifulSoup
+from pathvalidate import sanitize_filename
+import requests
+
 
 IMG_EXT = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp']
 REQ_HEAD = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/113.0"}
@@ -53,6 +55,8 @@ def download_images(website, save_folder) -> bool:
 
 		# get image name and path
 		filename = image.split('?')[0].split('/')[-1]
+		filename = filename.strip()
+		filename = sanitize_filename(filename)
 		file_system_path = os.path.join(save_folder, filename)
 		if os.path.isfile(file_system_path):
 			with open(file_system_path, "rb") as opened_file:

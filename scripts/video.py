@@ -4,6 +4,7 @@ import os
 import subprocess
 import sys
 
+from pathvalidate import sanitize_filename
 from yt_dlp import YoutubeDL
 
 
@@ -33,6 +34,8 @@ def process_video(website, save_folder, info, ffmpeg_path, playlist_index=None) 
 	# get video title
 	try:
 		video_title = info["title"]
+		video_title = video_title.strip()
+		video_title = sanitize_filename(video_title)
 	except KeyError:
 		return False
 

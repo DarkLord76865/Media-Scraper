@@ -4,3 +4,4 @@ beautifulsoup4>=4.12.2
 pyinstaller>=5.11.0
 yt-dlp>=2023.3.4
 psutil>=5.9.5
+pathvalidate>=3.0.0
